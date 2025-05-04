@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { AxisType } from '../types/alife';
 
 interface AxisRingProps {
@@ -9,6 +9,8 @@ interface AxisRingProps {
 }
 
 const AxisRing: React.FC<AxisRingProps> = ({ axes, onAxisClick, activeAxis }) => {
+  const [hoveredAxis, setHoveredAxis] = useState<string | null>(null);
+  
   const centerX = 250;
   const centerY = 250;
   const innerRadius = 160;  // Slightly larger than the domain wheel's outer radius
@@ -73,18 +75,40 @@ const AxisRing: React.FC<AxisRingProps> = ({ axes, onAxisClick, activeAxis }) =>
           const endAngle = (index + 1) * anglePerAxis - Math.PI / 2;
           const path = getSegmentPath(startAngle, endAngle, innerRadius, outerRadius);
           const isActive = activeAxis?.name === axis.name;
+          const isHovered = hoveredAxis === axis.name;
+          const baseColor = '#8B5CF6';
           
           return (
-            <g key={axis.name} onClick={() => handleSegmentClick(axis)}>
+            <g 
+              key={axis.name} 
+              onClick={() => handleSegmentClick(axis)}
+              onMouseEnter={() => setHoveredAxis(axis.name)}
+              onMouseLeave={() => setHoveredAxis(null)}
+            >
               <path
                 d={path}
-                fill={isActive ? '#8B5CF6' : '#E9D5FF'}
-                fillOpacity={isActive ? 0.9 : 0.6}
+                fill={isActive ? baseColor : '#E9D5FF'}
+                fillOpacity={isActive ? 0.9 : isHovered ? 0.8 : 0.6}
                 stroke="white"
-                strokeWidth={isActive ? 2 : 1}
-                className="cursor-pointer transition-all duration-300 hover:fill-opacity-80"
-                transform={isActive ? `translate(${Math.cos(startAngle + anglePerAxis/2) * 3}, ${Math.sin(startAngle + anglePerAxis/2) * 3})` : ''}
+                strokeWidth={isActive || isHovered ? 2 : 1}
+                className="cursor-pointer transition-all duration-300"
+                style={{
+                  transform: isActive || isHovered ? 
+                    `scale(1.03) translate(${Math.cos(startAngle + anglePerAxis/2) * 3}px, ${Math.sin(startAngle + anglePerAxis/2) * 3}px)` : '',
+                  filter: isHovered ? `drop-shadow(0 0 4px ${baseColor})` : '',
+                }}
               />
+              
+              {isHovered && (
+                <path
+                  d={path}
+                  fill="none"
+                  stroke={baseColor}
+                  strokeWidth="1"
+                  strokeOpacity="0.5"
+                  className="animate-pulse-gentle"
+                />
+              )}
             </g>
           );
         })}
@@ -93,16 +117,26 @@ const AxisRing: React.FC<AxisRingProps> = ({ axes, onAxisClick, activeAxis }) =>
         {axes.map((axis, index) => {
           const { x, y } = getLabelPosition(index);
           const isActive = activeAxis?.name === axis.name;
+          const isHovered = hoveredAxis === axis.name;
           
           return (
-            <g key={`label-${axis.name}`} className="cursor-pointer" onClick={() => handleSegmentClick(axis)}>
+            <g 
+              key={`label-${axis.name}`} 
+              className="cursor-pointer" 
+              onClick={() => handleSegmentClick(axis)}
+              onMouseEnter={() => setHoveredAxis(axis.name)}
+              onMouseLeave={() => setHoveredAxis(null)}
+            >
               <text
                 x={x}
                 y={y}
                 textAnchor="middle"
                 alignmentBaseline="middle"
-                className={`${isActive ? 'text-lg font-bold' : 'text-base'} transition-all duration-300`}
+                className={`${isActive || isHovered ? 'text-lg font-bold' : 'text-base'} transition-all duration-300`}
                 fill="#6B46C1"
+                style={{
+                  filter: isHovered ? 'drop-shadow(0 0 2px rgba(107, 70, 193, 0.8))' : '',
+                }}
               >
                 {axis.icon}
               </text>

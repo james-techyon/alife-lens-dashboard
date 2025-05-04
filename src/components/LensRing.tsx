@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { LensType } from '../types/alife';
 
 interface LensRingProps {
@@ -9,6 +9,8 @@ interface LensRingProps {
 }
 
 const LensRing: React.FC<LensRingProps> = ({ lenses, onLensClick, activeLens }) => {
+  const [hoveredLens, setHoveredLens] = useState<string | null>(null);
+  
   const centerX = 250;
   const centerY = 250;
   const innerRadius = 220;  // Slightly larger than the axis ring's outer radius
@@ -73,18 +75,40 @@ const LensRing: React.FC<LensRingProps> = ({ lenses, onLensClick, activeLens }) 
           const endAngle = (index + 1) * anglePerLens - Math.PI / 2;
           const path = getSegmentPath(startAngle, endAngle, innerRadius, outerRadius);
           const isActive = activeLens?.name === lens.name;
+          const isHovered = hoveredLens === lens.name;
+          const baseColor = '#2C7A7B';
           
           return (
-            <g key={lens.name} onClick={() => handleSegmentClick(lens)}>
+            <g 
+              key={lens.name} 
+              onClick={() => handleSegmentClick(lens)}
+              onMouseEnter={() => setHoveredLens(lens.name)}
+              onMouseLeave={() => setHoveredLens(null)}
+            >
               <path
                 d={path}
-                fill={isActive ? '#2C7A7B' : '#B2F5EA'}
-                fillOpacity={isActive ? 0.9 : 0.6}
+                fill={isActive ? baseColor : '#B2F5EA'}
+                fillOpacity={isActive ? 0.9 : isHovered ? 0.8 : 0.6}
                 stroke="white"
-                strokeWidth={isActive ? 2 : 1}
-                className="cursor-pointer transition-all duration-300 hover:fill-opacity-80"
-                transform={isActive ? `translate(${Math.cos(startAngle + anglePerLens/2) * 3}, ${Math.sin(startAngle + anglePerLens/2) * 3})` : ''}
+                strokeWidth={isActive || isHovered ? 2 : 1}
+                className="cursor-pointer transition-all duration-300"
+                style={{
+                  transform: isActive || isHovered ? 
+                    `scale(1.02) translate(${Math.cos(startAngle + anglePerLens/2) * 3}px, ${Math.sin(startAngle + anglePerLens/2) * 3}px)` : '',
+                  filter: isHovered ? `drop-shadow(0 0 4px ${baseColor})` : '',
+                }}
               />
+              
+              {isHovered && (
+                <path
+                  d={path}
+                  fill="none"
+                  stroke={baseColor}
+                  strokeWidth="1"
+                  strokeOpacity="0.5"
+                  className="animate-pulse-gentle"
+                />
+              )}
             </g>
           );
         })}
@@ -93,16 +117,26 @@ const LensRing: React.FC<LensRingProps> = ({ lenses, onLensClick, activeLens }) 
         {lenses.map((lens, index) => {
           const { x, y } = getLabelPosition(index);
           const isActive = activeLens?.name === lens.name;
+          const isHovered = hoveredLens === lens.name;
           
           return (
-            <g key={`label-${lens.name}`} className="cursor-pointer" onClick={() => handleSegmentClick(lens)}>
+            <g 
+              key={`label-${lens.name}`} 
+              className="cursor-pointer" 
+              onClick={() => handleSegmentClick(lens)}
+              onMouseEnter={() => setHoveredLens(lens.name)}
+              onMouseLeave={() => setHoveredLens(null)}
+            >
               <text
                 x={x}
                 y={y}
                 textAnchor="middle"
                 alignmentBaseline="middle"
-                className={`${isActive ? 'text-base font-bold' : 'text-sm'} transition-all duration-300`}
+                className={`${isActive || isHovered ? 'text-base font-bold' : 'text-sm'} transition-all duration-300`}
                 fill="#2C7A7B"
+                style={{
+                  filter: isHovered ? 'drop-shadow(0 0 2px rgba(44, 122, 123, 0.8))' : '',
+                }}
               >
                 {lens.icon}
               </text>

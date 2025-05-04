@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DomainType } from '../types/alife';
 import { Card } from '@/components/ui/card';
 
@@ -10,6 +11,9 @@ interface DomainWheelProps {
 }
 
 const DomainWheel: React.FC<DomainWheelProps> = ({ domains, onDomainClick, activeDomain }) => {
+  const navigate = useNavigate();
+  const [hoveredDomain, setHoveredDomain] = useState<string | null>(null);
+  
   const centerX = 250;
   const centerY = 250;
   const innerRadius = 80;
@@ -58,6 +62,9 @@ const DomainWheel: React.FC<DomainWheelProps> = ({ domains, onDomainClick, activ
   // Handle segment click
   const handleSegmentClick = (domain: DomainType) => {
     onDomainClick(domain);
+    // Navigate to domain page with slug
+    const domainSlug = domain.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    navigate(`/domain/${domainSlug}`);
   };
 
   return (
@@ -85,18 +92,41 @@ const DomainWheel: React.FC<DomainWheelProps> = ({ domains, onDomainClick, activ
           const endAngle = (index + 1) * anglePerDomain - Math.PI / 2;
           const path = getSegmentPath(startAngle, endAngle, innerRadius, outerRadius);
           const isActive = activeDomain?.name === domain.name;
+          const isHovered = hoveredDomain === domain.name;
           
           return (
-            <g key={domain.name} onClick={() => handleSegmentClick(domain)}>
+            <g 
+              key={domain.name} 
+              onClick={() => handleSegmentClick(domain)}
+              onMouseEnter={() => setHoveredDomain(domain.name)}
+              onMouseLeave={() => setHoveredDomain(null)}
+            >
               <path
                 d={path}
                 fill={domain.color}
-                fillOpacity={isActive ? 1 : 0.8}
+                fillOpacity={isActive || isHovered ? 1 : 0.8}
                 stroke="white"
                 strokeWidth={isActive ? 3 : 1}
-                className="domain-segment cursor-pointer"
-                transform={isActive ? `translate(${Math.cos(startAngle + anglePerDomain/2) * 5}, ${Math.sin(startAngle + anglePerDomain/2) * 5})` : ''}
+                className="cursor-pointer transition-all duration-300"
+                style={{
+                  transform: isActive || isHovered ? `scale(1.05) translate(${Math.cos(startAngle + anglePerDomain/2) * 5}px, ${Math.sin(startAngle + anglePerDomain/2) * 5}px)` : '',
+                  filter: isHovered ? `drop-shadow(0 0 6px ${domain.color})` : '',
+                }}
               />
+              
+              {isHovered && (
+                <path
+                  d={path}
+                  fill="none"
+                  stroke={domain.color}
+                  strokeWidth="2"
+                  strokeOpacity="0.6"
+                  className="animate-pulse-gentle"
+                  style={{
+                    filter: `drop-shadow(0 0 8px ${domain.color})`,
+                  }}
+                />
+              )}
             </g>
           );
         })}
@@ -106,16 +136,27 @@ const DomainWheel: React.FC<DomainWheelProps> = ({ domains, onDomainClick, activ
           const { x, y } = getLabelPosition(index);
           const angle = index * anglePerDomain - Math.PI / 2 + (anglePerDomain / 2);
           const isActive = activeDomain?.name === domain.name;
+          const isHovered = hoveredDomain === domain.name;
           
           return (
-            <g key={`label-${domain.name}`} className="cursor-pointer" onClick={() => handleSegmentClick(domain)}>
+            <g 
+              key={`label-${domain.name}`} 
+              className="cursor-pointer" 
+              onClick={() => handleSegmentClick(domain)}
+              onMouseEnter={() => setHoveredDomain(domain.name)}
+              onMouseLeave={() => setHoveredDomain(null)}
+            >
               <text
                 x={x}
                 y={y}
                 textAnchor="middle"
                 alignmentBaseline="middle"
-                className={`domain-icon ${isActive ? 'text-2xl' : 'text-xl'}`}
+                className={`domain-icon transition-all duration-300 ${isActive || isHovered ? 'text-2xl' : 'text-xl'}`}
                 fill="white"
+                style={{
+                  filter: isHovered ? `drop-shadow(0 0 3px white)` : '',
+                  textShadow: isHovered ? '0 0 5px rgba(255,255,255,0.8)' : '',
+                }}
               >
                 {domain.icon}
               </text>
