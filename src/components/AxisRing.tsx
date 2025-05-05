@@ -84,6 +84,7 @@ const AxisRing: React.FC<AxisRingProps> = ({ axes, onAxisClick, activeAxis }) =>
               onClick={() => handleSegmentClick(axis)}
               onMouseEnter={() => setHoveredAxis(axis.name)}
               onMouseLeave={() => setHoveredAxis(null)}
+              className="cursor-pointer transition-all duration-300"
             >
               <path
                 d={path}
@@ -91,7 +92,7 @@ const AxisRing: React.FC<AxisRingProps> = ({ axes, onAxisClick, activeAxis }) =>
                 fillOpacity={isActive ? 0.9 : isHovered ? 0.8 : 0.6}
                 stroke="white"
                 strokeWidth={isActive || isHovered ? 2 : 1}
-                className="cursor-pointer transition-all duration-300"
+                className="transition-all duration-300"
                 style={{
                   transform: isActive || isHovered ? 
                     `scale(1.03) translate(${Math.cos(startAngle + anglePerAxis/2) * 3}px, ${Math.sin(startAngle + anglePerAxis/2) * 3}px)` : '',
@@ -136,6 +137,8 @@ const AxisRing: React.FC<AxisRingProps> = ({ axes, onAxisClick, activeAxis }) =>
                 fill="#6B46C1"
                 style={{
                   filter: isHovered ? 'drop-shadow(0 0 2px rgba(107, 70, 193, 0.8))' : '',
+                  transform: isHovered ? 'scale(1.2)' : 'scale(1)',
+                  transition: 'transform 0.3s ease'
                 }}
               >
                 {axis.icon}
