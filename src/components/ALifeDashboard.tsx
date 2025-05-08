@@ -1,6 +1,9 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 import DomainWheel from './DomainWheel';
 import AxisRing from './AxisRing';
 import LensRing from './LensRing';
@@ -9,6 +12,7 @@ import { DomainType, AxisType, LensType, RingType } from '../types/alife';
 import { domainData, axisData, lensData } from '../data/alifeData';
 
 const ALifeDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [activeDomain, setActiveDomain] = useState<DomainType | null>(null);
   const [activeAxis, setActiveAxis] = useState<AxisType | null>(null);
   const [activeLens, setActiveLens] = useState<LensType | null>(null);
@@ -17,6 +21,7 @@ const ALifeDashboard: React.FC = () => {
   const handleDomainClick = (domain: DomainType) => {
     setActiveDomain(domain);
     setActiveRingType('domain');
+    // Navigation is now handled by a separate button in the DetailPanel
   };
 
   const handleAxisClick = (axis: AxisType) => {
@@ -27,6 +32,13 @@ const ALifeDashboard: React.FC = () => {
   const handleLensClick = (lens: LensType) => {
     setActiveLens(lens);
     setActiveRingType('lens');
+  };
+
+  const handleNavigateToDomain = () => {
+    if (activeDomain) {
+      const domainSlug = activeDomain.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      navigate(`/domain/${domainSlug}`);
+    }
   };
 
   return (
@@ -65,6 +77,7 @@ const ALifeDashboard: React.FC = () => {
               activeAxis={activeAxis}
               activeLens={activeLens}
               activeRingType={activeRingType}
+              onNavigateToDomain={handleNavigateToDomain}
             />
             <Card className="p-4 shadow-md">
               <h3 className="font-semibold mb-2">How to Use the Dashboard</h3>

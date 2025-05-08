@@ -1,8 +1,5 @@
-
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { DomainType } from '../types/alife';
-import { Card } from '@/components/ui/card';
 
 interface DomainWheelProps {
   domains: DomainType[];
@@ -11,7 +8,6 @@ interface DomainWheelProps {
 }
 
 const DomainWheel: React.FC<DomainWheelProps> = ({ domains, onDomainClick, activeDomain }) => {
-  const navigate = useNavigate();
   const [hoveredDomain, setHoveredDomain] = useState<string | null>(null);
   
   const centerX = 250;
@@ -59,12 +55,12 @@ const DomainWheel: React.FC<DomainWheelProps> = ({ domains, onDomainClick, activ
     };
   };
 
-  // Handle segment click
+  // Handle segment click - UPDATED to not navigate directly
   const handleSegmentClick = (domain: DomainType) => {
+    // Only trigger the click handler callback
     onDomainClick(domain);
-    // Navigate to domain page with slug
-    const domainSlug = domain.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-    navigate(`/domain/${domainSlug}`);
+    
+    // Navigation is now handled in ALifeDashboard component
   };
 
   return (

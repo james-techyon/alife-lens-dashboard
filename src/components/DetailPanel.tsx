@@ -1,6 +1,8 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 import { DomainType, AxisType, LensType, RingType } from '../types/alife';
 
 interface DetailPanelProps {
@@ -8,6 +10,7 @@ interface DetailPanelProps {
   activeAxis: AxisType | null;
   activeLens: LensType | null;
   activeRingType: RingType | null;
+  onNavigateToDomain?: () => void;
 }
 
 const DetailPanel: React.FC<DetailPanelProps> = ({
@@ -15,6 +18,7 @@ const DetailPanel: React.FC<DetailPanelProps> = ({
   activeAxis,
   activeLens,
   activeRingType,
+  onNavigateToDomain,
 }) => {
   const renderContent = () => {
     if (!activeRingType) {
@@ -63,6 +67,23 @@ const DetailPanel: React.FC<DetailPanelProps> = ({
                 </div>
               </div>
             </CardContent>
+            {onNavigateToDomain && (
+              <CardFooter className="pt-2 pb-0">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onNavigateToDomain}
+                  className="w-full flex justify-between items-center"
+                  style={{ 
+                    borderColor: activeDomain.color,
+                    color: activeDomain.color
+                  }}
+                >
+                  <span>Explore {activeDomain.name}</span>
+                  <ArrowRight size={16} />
+                </Button>
+              </CardFooter>
+            )}
           </>
         );
       
