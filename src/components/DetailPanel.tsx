@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { DomainType, AxisType, LensType, RingType } from '../types/alife';
 
 interface DetailPanelProps {
@@ -32,7 +33,12 @@ const DetailPanel: React.FC<DetailPanelProps> = ({
           <>
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2">
-                <span className="text-2xl">{activeDomain.icon}</span>
+                <span 
+                  className="text-2xl p-1 rounded-full" 
+                  style={{backgroundColor: `${activeDomain.color}20`}}
+                >
+                  {activeDomain.icon}
+                </span>
                 <span>{activeDomain.name}</span>
               </CardTitle>
               <CardDescription>Core Domain (WHAT)</CardDescription>
@@ -55,6 +61,13 @@ const DetailPanel: React.FC<DetailPanelProps> = ({
                       </span>
                     ))}
                   </div>
+                </div>
+                <div className="text-sm pt-2" style={{color: activeDomain.color}}>
+                  <p className="font-semibold">Domain Focus:</p>
+                  <p className="text-muted-foreground mt-1">
+                    This domain represents core aspects of {activeDomain.name.toLowerCase()}, focusing on
+                    balance and optimization in your life.
+                  </p>
                 </div>
                 <div className="pt-2">
                   <p className="text-sm text-muted-foreground">
