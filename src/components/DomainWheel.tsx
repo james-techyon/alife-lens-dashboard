@@ -62,80 +62,9 @@ const DomainWheel: React.FC<DomainWheelProps> = ({ domains, onDomainClick, activ
   // Handle segment click
   const handleSegmentClick = (domain: DomainType) => {
     onDomainClick(domain);
-  };
-
-  // Function to generate central domain segments
-  const renderCenterDomains = () => {
-    const centerRadius = innerRadius - 10; // Smaller than innerRadius to create a gap
-    
-    return (
-      <>
-        {/* Center Circle Background */}
-        <circle
-          cx={centerX}
-          cy={centerY}
-          r={centerRadius}
-          fill="#FFFFFF"
-          stroke="#E2E8F0"
-          strokeWidth="1"
-          className="drop-shadow-sm transition-all duration-300"
-        />
-        
-        {/* Domain Icons in Center */}
-        {domains.map((domain, index) => {
-          const angle = index * anglePerDomain - Math.PI / 2 + (anglePerDomain / 2);
-          const iconRadius = centerRadius * 0.7; // Position icons within the center circle
-          const x = centerX + iconRadius * Math.cos(angle);
-          const y = centerY + iconRadius * Math.sin(angle);
-          
-          const isActive = activeDomain?.name === domain.name;
-          const isHovered = hoveredDomain === domain.name;
-          
-          return (
-            <g
-              key={`center-${domain.name}`}
-              onClick={() => handleSegmentClick(domain)}
-              onMouseEnter={() => setHoveredDomain(domain.name)}
-              onMouseLeave={() => setHoveredDomain(null)}
-              className="cursor-pointer"
-            >
-              <circle
-                cx={x}
-                cy={y}
-                r={18}
-                fill={isActive || isHovered ? domain.color : '#F9FAFB'}
-                fillOpacity={isActive ? 0.9 : isHovered ? 0.7 : 0.3}
-                stroke={domain.color}
-                strokeWidth={isActive || isHovered ? 2 : 1}
-                className="transition-all duration-300"
-                style={{
-                  transform: isActive || isHovered ? 'scale(1.2)' : 'scale(1)',
-                  transformOrigin: `${x}px ${y}px`,
-                  filter: isHovered ? `drop-shadow(0 0 4px ${domain.color})` : '',
-                }}
-              />
-              <text
-                x={x}
-                y={y}
-                textAnchor="middle"
-                alignmentBaseline="middle"
-                className="transition-all duration-300"
-                fill={isActive || isHovered ? '#FFFFFF' : domain.color}
-                style={{
-                  fontSize: isActive || isHovered ? '1.2rem' : '1rem',
-                  fontWeight: isActive ? 'bold' : 'normal',
-                  filter: isHovered ? 'drop-shadow(0 0 2px rgba(255,255,255,0.5))' : '',
-                  transform: isActive || isHovered ? 'scale(1.1)' : 'scale(1)',
-                  transformOrigin: `${x}px ${y}px`,
-                }}
-              >
-                {domain.icon}
-              </text>
-            </g>
-          );
-        })}
-      </>
-    );
+    // Navigate to domain page with slug
+    const domainSlug = domain.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    navigate(`/domain/${domainSlug}`);
   };
 
   return (
@@ -146,15 +75,12 @@ const DomainWheel: React.FC<DomainWheelProps> = ({ domains, onDomainClick, activ
         viewBox="0 0 500 500" 
         className="animate-fade-in"
       >
-        {/* Center Domain Icons */}
-        {renderCenterDomains()}
-        
         {/* Center Circle */}
         <circle
           cx={centerX}
           cy={centerY}
           r={innerRadius}
-          fill="none"
+          fill="#FFFFFF"
           stroke="#E2E8F0"
           strokeWidth="2"
           className="drop-shadow-sm"
@@ -174,7 +100,6 @@ const DomainWheel: React.FC<DomainWheelProps> = ({ domains, onDomainClick, activ
               onClick={() => handleSegmentClick(domain)}
               onMouseEnter={() => setHoveredDomain(domain.name)}
               onMouseLeave={() => setHoveredDomain(null)}
-              className="cursor-pointer transition-all duration-300"
             >
               <path
                 d={path}
@@ -182,7 +107,7 @@ const DomainWheel: React.FC<DomainWheelProps> = ({ domains, onDomainClick, activ
                 fillOpacity={isActive || isHovered ? 1 : 0.8}
                 stroke="white"
                 strokeWidth={isActive ? 3 : 1}
-                className="transition-all duration-300"
+                className="cursor-pointer transition-all duration-300"
                 style={{
                   transform: isActive || isHovered ? `scale(1.05) translate(${Math.cos(startAngle + anglePerDomain/2) * 5}px, ${Math.sin(startAngle + anglePerDomain/2) * 5}px)` : '',
                   filter: isHovered ? `drop-shadow(0 0 6px ${domain.color})` : '',

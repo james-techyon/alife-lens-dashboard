@@ -1,9 +1,6 @@
 
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 import DomainWheel from './DomainWheel';
 import AxisRing from './AxisRing';
 import LensRing from './LensRing';
@@ -69,25 +66,10 @@ const ALifeDashboard: React.FC = () => {
               activeLens={activeLens}
               activeRingType={activeRingType}
             />
-            
-            {activeDomain && (
-              <Card className="p-4 shadow-md">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-semibold">View {activeDomain.name} Dashboard</h3>
-                  <Link to={`/domain/${activeDomain.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
-                    <Button variant="ghost" size="sm" className="gap-1">
-                      <span>Details</span>
-                      <ArrowRight size={16} />
-                    </Button>
-                  </Link>
-                </div>
-              </Card>
-            )}
-            
             <Card className="p-4 shadow-md">
               <h3 className="font-semibold mb-2">How to Use the Dashboard</h3>
               <ul className="text-sm space-y-2 text-muted-foreground">
-                <li>1. Click on a domain (center or inner ring) to select an area of focus</li>
+                <li>1. Click on a domain (inner ring) to select an area of focus</li>
                 <li>2. Explore a dimensional axis (middle ring) to provide context</li>
                 <li>3. Apply a practical lens (outer ring) to plan actions</li>
                 <li>4. Use the insights to improve your life balance</li>
